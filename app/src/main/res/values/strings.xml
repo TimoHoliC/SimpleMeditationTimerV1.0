@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Simple Meditation Timer</string>
+    <string name="title_activity_main_menu">MainMenuActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_load">LoadActivity</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_basic">BasicActivity</string>
+    <string name="phases">Phasen</string>
+    <string name="start_meditation">Start Meditation</string>
+    <string name="duration">Dauer</string>
+    <string-array name="numbers">
+        <item>1</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+</resources>
