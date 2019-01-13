@@ -55,7 +55,7 @@
         app:layout_constraintVertical_bias="0.275" />
 
     <Spinner
-        android:id="@+id/spinner"
+        android:id="@+id/phasesSpinner"
         android:layout_width="wrap_content"
         android:layout_height="15dp"
         android:layout_marginStart="8dp"
@@ -85,24 +85,21 @@
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintVertical_bias="0.165" />
 
-    <TextView
-        android:id="@+id/durationTextView"
+    <Spinner
+        android:id="@+id/durationSpinner"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="15dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
-        android:text="40:00"
-        android:textColor="@android:color/white"
-        app:fontFamily="@font/abeezee"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.725"
+        app:layout_constraintHorizontal_bias="0.778"
         app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/spinner"
-        app:layout_constraintVertical_bias="0.165" />
+        app:layout_constraintTop_toBottomOf="@+id/phasesSpinner"
+        app:layout_constraintVertical_bias="0.169" />
 
 </android.support.constraint.ConstraintLayout>

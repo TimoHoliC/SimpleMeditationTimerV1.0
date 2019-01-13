@@ -22,8 +22,10 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
     private Button startMeditationButton;
     EditText editTextLastOfMeditation;
     private long lastOfMeditation;
-    private Spinner spinner;
-    private ArrayAdapter<String> dataAdapter;
+    private Spinner phasesSpinner;
+    private Spinner durationSpinner;
+    private ArrayAdapter<String> phasesAdapter;
+    private ArrayAdapter<String> durationsAdapter;
 
     @SuppressLint("ResourceType")
     @Override
@@ -34,20 +36,29 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
 
         startMeditationButton = (Button) findViewById(R.id.startMeditationButton);
         startMeditationButton.setOnClickListener((OnClickListener) this);
-
-        spinner = (Spinner) findViewById(R.id.spinner);
-
-        spinner.setOnItemSelectedListener(this);
+        phasesSpinner = (Spinner) findViewById(R.id.phasesSpinner);
+        phasesSpinner.setOnItemSelectedListener(this);
+        durationSpinner = (Spinner) findViewById(R.id.durationSpinner);
+        durationSpinner.setOnItemSelectedListener(this);
 
         List<String> numbers = new ArrayList<String>();
         numbers.add("1");
         numbers.add("4");
         numbers.add("5");
 
+        phasesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, numbers);
+        phasesAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        phasesSpinner.setAdapter(phasesAdapter);
 
-        dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, numbers);
-        dataAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        spinner.setAdapter(dataAdapter);
+        List<String> durations = new ArrayList<>();
+        durations.add("20:00");
+        durations.add("30:00");
+        durations.add("40:00");
+
+        durationsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, durations);
+        durationsAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        durationSpinner.setAdapter(durationsAdapter);
+
     }
 
     @Override
@@ -55,11 +66,12 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
         int ce = v.getId();
 
         if(ce == R.id.startMeditationButton){
-            lastOfMeditation = 20000;
+
 
             Intent intent = new Intent(MainMenuActivity.this, MeditationActivity.class);
-            intent.putExtra("lastOfMeditation", lastOfMeditation);
-            intent.putExtra("numberOfPhases", setPhase());
+            intent.putExtra("lastOfMeditation", getDuration());
+            intent.putExtra("numberOfPhases", getPhase());
+
             startActivity(intent);
         }
     }
@@ -68,7 +80,6 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
         ((TextView) parent.getChildAt(0)).setTextSize(12);
-        //String text = parent.getItemAtPosition(position).toString();
     }
 
     @Override
@@ -76,8 +87,8 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
 
     }
 
-    public int setPhase(){
-        int phase = spinner.getSelectedItemPosition();
+    public int getPhase(){
+        int phase = phasesSpinner.getSelectedItemPosition();
         if(phase == 0){
             phase = 1;
         }else if(phase == 1){
@@ -87,5 +98,20 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
         }
 
         return phase;
+    }
+
+    public long getDuration(){
+        int durationPosition = durationSpinner.getSelectedItemPosition();
+        long lDuration = 20 * 1000 * 60;
+        if(durationPosition == 0){
+            lDuration = 20 * 1000 * 60;
+        }else if(durationPosition == 1){
+            lDuration = 30 * 1000 * 60;
+        }else if (durationPosition == 2){
+            lDuration = 40 * 1000 * 60;
+        }
+
+        return lDuration;
+
     }
 }
