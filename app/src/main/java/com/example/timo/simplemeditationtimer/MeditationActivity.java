@@ -22,7 +22,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     private CountDownTimer countDownTimer;
     private long timeLeftInMilliseconds;
     private boolean timerRunning;
-    private List<MediaPlayer> mediaPlayerList = new ArrayList<MediaPlayer>();
+
     private boolean timerPositive;
     private long timeSetInMilliseconds;
     private long timePerPhaseInMilliseconds;
@@ -32,7 +32,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     private long bellDelay;
     int counter;
     private boolean medFinished;
-    private int mediaPlayerCounter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +52,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         timeTextView = findViewById(R.id.timeTextView);
         timePerPhaseInMilliseconds = timeSetInMilliseconds / phase;
         startPauseButton = findViewById(R.id.startPauseButton);
-
         timerPositive = true;
-        for (int i = 0; i < 10; i++) {
-            mediaPlayerList.add(MediaPlayer.create(this, R.raw.japanese_singing_bowl));
-        }
         startPauseButton.setOnClickListener((View.OnClickListener) this);
         timeTextView.setOnClickListener((View.OnClickListener) this);
         checkForPhaseses();
@@ -80,7 +76,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         }else if(ce == R.id.startPauseButton && timerRunning){
             pauseTimer();
         }else if(ce == R.id.startPauseButton && !timerRunning){
-            startTimer();
+            startMeditationTimer();
         }else if (ce == R.id.timeTextView && timerPositive){
             timerPositive = false;
             updateCountdownText();
@@ -90,7 +86,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void startTimer(){
+    private void startMeditationTimer(){
         countDownTimer = new CountDownTimer(timeLeftInMilliseconds, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -136,8 +132,9 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void ringEndbell(){
-        mediaPlayerList.get(mediaPlayerCounter).start();
-        mediaPlayerCounter++;
+
+        MediaPlayer.create(this, R.raw.japanese_singing_bowl).start();
+
     }
 
     private void pauseTimer(){
@@ -150,8 +147,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         if(phaseDisplayed != 0){
             phaseTextView.setText("Phase " + phaseDisplayed);
             if(phaseDisplayed != 1){
-                mediaPlayerList.add(MediaPlayer.create(this, R.raw.japanese_singing_bowl));
-                mediaPlayerList.get(mediaPlayerList.size()-1).start();
+                MediaPlayer.create(this, R.raw.japanese_singing_bowl).start();
             }
         }else {
             phaseTextView.setText("Phase " + 1);
