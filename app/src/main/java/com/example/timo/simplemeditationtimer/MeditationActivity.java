@@ -10,8 +10,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 public class MeditationActivity extends AppCompatActivity implements View.OnClickListener {
@@ -22,14 +20,14 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     private CountDownTimer countDownTimer;
     private long timeLeftInMilliseconds;
     private boolean timerRunning;
-
     private boolean timerPositive;
     private long timeSetInMilliseconds;
     private long timePerPhaseInMilliseconds;
+    private long warmUpTimeInMillis;
     private int phase;
     private int phaseDisplayed;
     private Intent intent;
-    private long bellDelay;
+    private long bellDelay = 2000;
     int counter;
     private boolean medFinished;
 
@@ -47,14 +45,15 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         intent = getIntent();
         timeLeftInMilliseconds = intent.getLongExtra("lastOfMeditation",0);
         phase = intent.getIntExtra("numberOfPhases",0);
+        warmUpTimeInMillis = intent.getLongExtra("warmUpTime", 0);
         phaseTextView = findViewById(R.id.phaseTextView);
         timeSetInMilliseconds = timeLeftInMilliseconds;
         timeTextView = findViewById(R.id.timeTextView);
         timePerPhaseInMilliseconds = timeSetInMilliseconds / phase;
         startPauseButton = findViewById(R.id.startPauseButton);
         timerPositive = true;
-        startPauseButton.setOnClickListener((View.OnClickListener) this);
-        timeTextView.setOnClickListener((View.OnClickListener) this);
+        startPauseButton.setOnClickListener(this);
+        timeTextView.setOnClickListener(this);
         checkForPhaseses();
     }
 
@@ -76,7 +75,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         }else if(ce == R.id.startPauseButton && timerRunning){
             pauseTimer();
         }else if(ce == R.id.startPauseButton && !timerRunning){
-            startMeditationTimer();
+            startWarmUpTimer();
         }else if (ce == R.id.timeTextView && timerPositive){
             timerPositive = false;
             updateCountdownText();
@@ -86,7 +85,28 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void startMeditationTimer(){
+    private void startWarmUpTimer() {
+        new CountDownTimer(warmUpTimeInMillis, 100) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                //timeLeftInMilliseconds = millisUntilFinished;
+                updateCountdownText();
+            }
+
+            @Override
+            public void onFinish() {
+
+                startThreeGongsTimer();
+                startMeditationTimer();
+            }
+        }.start();
+
+        timerRunning = true;
+        startPauseButton.setBackgroundResource(R.drawable.pause_button);
+        phaseTextView.setText("Vorbereitung");
+    }
+
+    private void startMeditationTimer() {
         countDownTimer = new CountDownTimer(timeLeftInMilliseconds, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -97,10 +117,11 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onFinish() {
 
-                ringEndbellTimer();
+                startThreeGongsTimer();
                 medFinished = true;
                 startPauseButton.setBackgroundResource(R.drawable.stop_button);
                 phaseTextView.setText("");
+                countDownTimer.cancel();
             }
         }.start();
 
@@ -108,30 +129,32 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         startPauseButton.setBackgroundResource(R.drawable.pause_button);
     }
 
-    public void ringEndbellTimer(){
+    //TODO Timer richtig anzeigen beim Warm-up
+    //TODO Textview Vorbereitung anzeigen beim Warm-up
 
-        countDownTimer = new CountDownTimer(4000, 1000) {
 
+    private void startThreeGongsTimer() {
 
+        new CountDownTimer(bellDelay * 3 + 500, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
-               bellDelay = millisUntilFinished;
-               ringEndbell();
-
-
+                //kleiner hundert, da ungenau beim abtasten
+                if (millisUntilFinished % bellDelay <= 100) {
+                    ringBell();
+                }
             }
 
             @Override
             public void onFinish() {
 
-
             }
         }.start();
 
-
+        timerRunning = true;
+        startPauseButton.setBackgroundResource(R.drawable.pause_button);
     }
 
-    private void ringEndbell(){
+    private void ringBell() {
 
         MediaPlayer.create(this, R.raw.japanese_singing_bowl).start();
 
@@ -163,7 +186,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
 
         long difference = timeSetInMilliseconds - timeLeftInMilliseconds + 900;
 
-        countPhases(difference);
+        countPhases();
 
 
 
@@ -187,7 +210,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    private void countPhases(long difference){
+    private void countPhases() {
         if((timeLeftInMilliseconds / timePerPhaseInMilliseconds == phase)){
             phase--;
 
