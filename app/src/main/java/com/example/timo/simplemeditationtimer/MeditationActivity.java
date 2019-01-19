@@ -34,8 +34,6 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     private boolean medFinished;
     private int mediaPlayerCounter;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,15 +69,6 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         }else{
             updateCountdownText();
         }
-    }
-
-    public void stopAndClearMediaPlayerList(List<MediaPlayer> mpList){
-
-        for(MediaPlayer mp : mpList){
-            mp.pause();
-        }
-
-        mpList.clear();
     }
 
     @Override

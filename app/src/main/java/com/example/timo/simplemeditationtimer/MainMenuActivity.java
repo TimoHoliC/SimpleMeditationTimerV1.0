@@ -22,8 +22,10 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
     private Button startMeditationButton;
     private Spinner phasesSpinner;
     private Spinner durationSpinner;
+    private Spinner warmUpSpinner;
     private ArrayAdapter<String> phasesAdapter;
     private ArrayAdapter<String> durationsAdapter;
+    private ArrayAdapter<String> warmUpAdapter;
 
     @SuppressLint("ResourceType")
     @Override
@@ -38,6 +40,8 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
         phasesSpinner.setOnItemSelectedListener(this);
         durationSpinner = (Spinner) findViewById(R.id.durationSpinner);
         durationSpinner.setOnItemSelectedListener(this);
+        warmUpSpinner = (Spinner) findViewById(R.id.warmUpSpinner);
+        warmUpSpinner.setOnItemSelectedListener(this);
 
         List<String> numbers = new ArrayList<String>();
         numbers.add("1");
@@ -57,6 +61,19 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
         durationsAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         durationSpinner.setAdapter(durationsAdapter);
 
+        List<String> warumUpList = new ArrayList<>();
+        warumUpList.add("-");
+        warumUpList.add("00:30");
+        warumUpList.add("1:00");
+        warumUpList.add("2:00");
+        warumUpList.add("3:00");
+        warumUpList.add("5:00");
+        warumUpList.add("10:00");
+
+        warmUpAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, warumUpList);
+        warmUpAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        warmUpSpinner.setAdapter(warmUpAdapter);
+
     }
 
     @Override
@@ -69,8 +86,28 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
             Intent intent = new Intent(MainMenuActivity.this, MeditationActivity.class);
             intent.putExtra("lastOfMeditation", getDuration());
             intent.putExtra("numberOfPhases", getPhase());
+            intent.putExtra("warmUpTime", getWarmUpTime());
 
             startActivity(intent);
+        }
+    }
+
+    private long getWarmUpTime() {
+        int position = warmUpSpinner.getSelectedItemPosition();
+        if(position == 0){
+            return 0;
+        }else if(position == 1){
+            return 1 * 1000 * 30;
+        }else if (position == 2){
+            return 1 * 1000 * 60;
+        }else if(position == 3){
+            return 2 * 1000 * 60;
+        }else if (position == 4){
+            return 3 * 1000 * 60;
+        }else if (position == 5){
+            return 5 * 1000 * 60;
+        }else{
+            return 10 * 1000 * 60;
         }
     }
 
