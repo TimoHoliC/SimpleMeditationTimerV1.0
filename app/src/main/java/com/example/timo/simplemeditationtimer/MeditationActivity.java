@@ -33,6 +33,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     private Intent intent;
     private long bellDelay;
     int counter;
+    private boolean medFinished;
 
 
 
@@ -45,6 +46,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         phaseDisplayed = 0;
         counter = 0;
         timerPositive = true;
+        medFinished = false;
         intent = getIntent();
         timeLeftInMilliseconds = intent.getLongExtra("lastOfMeditation",0);
         phase = intent.getIntExtra("numberOfPhases",0);
@@ -82,7 +84,9 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v){
         int ce = v.getId();
 
-        if(ce == R.id.startPauseButton && timerRunning){
+        if(ce == R.id.startPauseButton && medFinished){
+            finish();
+        }else if(ce == R.id.startPauseButton && timerRunning){
             pauseTimer();
             stopAndClearMediaPlayerList(mediaPlayerEndgongList);
             stopAndClearMediaPlayerList(mediaPlayerList);
@@ -109,8 +113,10 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
 
             @Override
             public void onFinish() {
-                updateCountdownText();
+
                 ringEndbellTimer();
+                medFinished = true;
+                startPauseButton.setBackgroundResource(R.drawable.stop_button);
             }
         }.start();
 
