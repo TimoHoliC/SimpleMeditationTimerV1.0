@@ -20,8 +20,6 @@ import java.util.List;
 public class MainMenuActivity extends AppCompatActivity implements OnClickListener, AdapterView.OnItemSelectedListener {
 
     private Button startMeditationButton;
-    EditText editTextLastOfMeditation;
-    private long lastOfMeditation;
     private Spinner phasesSpinner;
     private Spinner durationSpinner;
     private ArrayAdapter<String> phasesAdapter;
@@ -104,7 +102,7 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
         int durationPosition = durationSpinner.getSelectedItemPosition();
         long lDuration = 20 * 1000 * 60;
         if(durationPosition == 0){
-            lDuration = 20 * 1000 * 60;
+            lDuration = 20 * 10 * 60;
         }else if(durationPosition == 1){
             lDuration = 30 * 1000 * 60;
         }else if (durationPosition == 2){
