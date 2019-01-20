@@ -10,9 +10,9 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,13 +34,13 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
         setContentView(R.layout.activity_main_menu);
 
 
-        startMeditationButton = (Button) findViewById(R.id.startMeditationButton);
-        startMeditationButton.setOnClickListener((OnClickListener) this);
-        phasesSpinner = (Spinner) findViewById(R.id.phasesSpinner);
+        startMeditationButton = findViewById(R.id.startMeditationButton);
+        startMeditationButton.setOnClickListener(this);
+        phasesSpinner = findViewById(R.id.phasesSpinner);
         phasesSpinner.setOnItemSelectedListener(this);
-        durationSpinner = (Spinner) findViewById(R.id.durationSpinner);
+        durationSpinner = findViewById(R.id.durationSpinner);
         durationSpinner.setOnItemSelectedListener(this);
-        warmUpSpinner = (Spinner) findViewById(R.id.warmUpSpinner);
+        warmUpSpinner = findViewById(R.id.warmUpSpinner);
         warmUpSpinner.setOnItemSelectedListener(this);
 
         List<String> numbers = new ArrayList<String>();
@@ -139,7 +139,7 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
         int durationPosition = durationSpinner.getSelectedItemPosition();
         long lDuration = 20 * 1000 * 60;
         if(durationPosition == 0){
-            lDuration = 20 * 10 * 60;
+            lDuration = 20 * 1000 * 60;
         }else if(durationPosition == 1){
             lDuration = 30 * 1000 * 60;
         }else if (durationPosition == 2){

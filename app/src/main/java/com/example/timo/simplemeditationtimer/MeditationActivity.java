@@ -18,19 +18,21 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     private TextView timeTextView;
     private TextView phaseTextView;
     private CountDownTimer countDownTimer;
-    private long timeLeftInMilliseconds;
+    private long timeLeftInMillis;
     private boolean timerRunning;
     private boolean timerPositive;
     private long timeSetInMilliseconds;
     private long timePerPhaseInMilliseconds;
-    private long warmUpTimeInMillis;
+    private long warmUpTimeLeftInMillis;
+    private long warmUpTimeSetInMillis;
     private int phase;
+    private int phasesOverall;
     private int phaseDisplayed;
     private Intent intent;
     private long bellDelay = 2000;
     int counter;
     private boolean medFinished;
-
+    private boolean warmUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,26 +45,38 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
 
         medFinished = false;
         intent = getIntent();
-        timeLeftInMilliseconds = intent.getLongExtra("lastOfMeditation",0);
+        timeLeftInMillis = intent.getLongExtra("lastOfMeditation", 0);
         phase = intent.getIntExtra("numberOfPhases",0);
-        warmUpTimeInMillis = intent.getLongExtra("warmUpTime", 0);
+        phasesOverall = phase;
+        warmUpTimeLeftInMillis = intent.getLongExtra("warmUpTime", 0);
+        warmUp = warmUpTimeLeftInMillis != 0;
         phaseTextView = findViewById(R.id.phaseTextView);
-        timeSetInMilliseconds = timeLeftInMilliseconds;
+        timeSetInMilliseconds = timeLeftInMillis;
+        warmUpTimeSetInMillis = warmUpTimeLeftInMillis;
         timeTextView = findViewById(R.id.timeTextView);
         timePerPhaseInMilliseconds = timeSetInMilliseconds / phase;
         startPauseButton = findViewById(R.id.startPauseButton);
         timerPositive = true;
         startPauseButton.setOnClickListener(this);
         timeTextView.setOnClickListener(this);
-        checkForPhaseses();
+        checkForWarmUp();
+
     }
 
-    private void checkForPhaseses(){
-        if(phase == 1){
+    private void checkForWarmUp() {
+        if (warmUp == false)
+            checkForPhases();
+        else
+            updateCountdownText(warmUpTimeSetInMillis, warmUpTimeLeftInMillis);
+    }
+
+    private void checkForPhases() {
+
+        if (phasesOverall == 1) {
             phaseTextView.setVisibility(View.INVISIBLE);
-            updateCountdownText();
-        }else{
-            updateCountdownText();
+            updateCountdownText(timeSetInMilliseconds, timeLeftInMillis);
+        } else {
+            updateCountdownText(timeSetInMilliseconds, timeLeftInMillis);
         }
     }
 
@@ -74,28 +88,32 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
             finish();
         }else if(ce == R.id.startPauseButton && timerRunning){
             pauseTimer();
-        }else if(ce == R.id.startPauseButton && !timerRunning){
+        } else if (ce == R.id.startPauseButton && !timerRunning && warmUp) {
             startWarmUpTimer();
+        } else if (ce == R.id.startPauseButton && !timerRunning && !warmUp) {
+            startMeditationTimer();
         }else if (ce == R.id.timeTextView && timerPositive){
             timerPositive = false;
-            updateCountdownText();
+            updateCountdownText(timeSetInMilliseconds, timeLeftInMillis);
         }else if (ce == R.id.timeTextView && timerPositive == false){
             timerPositive = true;
-            updateCountdownText();
+            updateCountdownText(timeSetInMilliseconds, timeLeftInMillis);
         }
     }
 
     private void startWarmUpTimer() {
-        new CountDownTimer(warmUpTimeInMillis, 100) {
+        warmUp = true;
+
+        countDownTimer = new CountDownTimer(warmUpTimeLeftInMillis, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
-                //timeLeftInMilliseconds = millisUntilFinished;
-                updateCountdownText();
+                warmUpTimeLeftInMillis = millisUntilFinished;
+                updateCountdownText(warmUpTimeSetInMillis, warmUpTimeLeftInMillis);
             }
 
             @Override
             public void onFinish() {
-
+                warmUp = false;
                 startThreeGongsTimer();
                 startMeditationTimer();
             }
@@ -103,15 +121,15 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
 
         timerRunning = true;
         startPauseButton.setBackgroundResource(R.drawable.pause_button);
-        phaseTextView.setText("Vorbereitung");
+
     }
 
     private void startMeditationTimer() {
-        countDownTimer = new CountDownTimer(timeLeftInMilliseconds, 100) {
+        countDownTimer = new CountDownTimer(timeLeftInMillis, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
-                timeLeftInMilliseconds = millisUntilFinished;
-                updateCountdownText();
+                timeLeftInMillis = millisUntilFinished;
+                updateCountdownText(timeSetInMilliseconds, timeLeftInMillis);
             }
 
             @Override
@@ -128,10 +146,6 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         timerRunning = true;
         startPauseButton.setBackgroundResource(R.drawable.pause_button);
     }
-
-    //TODO Timer richtig anzeigen beim Warm-up
-    //TODO Textview Vorbereitung anzeigen beim Warm-up
-
 
     private void startThreeGongsTimer() {
 
@@ -179,20 +193,24 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    private void updateCountdownText(){
+    private void updateCountdownText(long timeSetInMillis, long timeLeftInMillis) {
 
         int minutes;
         int seconds;
 
-        long difference = timeSetInMilliseconds - timeLeftInMilliseconds + 900;
+        long difference = timeSetInMillis - timeLeftInMillis + 900;
 
-        countPhases();
-
-
+        if (warmUp == true) {
+            phaseTextView.setText("Vorbereitung");
+        } else if (phasesOverall != 1) {
+            countPhases();
+        } else if (phasesOverall == 1) {
+            phaseTextView.setVisibility(View.INVISIBLE);
+        }
 
         if(timerPositive) {
-            minutes = (int) (timeLeftInMilliseconds / 1000) / 60;
-            seconds = (int) (timeLeftInMilliseconds / 1000) % 60;
+            minutes = (int) (timeLeftInMillis / 1000) / 60;
+            seconds = (int) (timeLeftInMillis / 1000) % 60;
 
             String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
 
@@ -211,7 +229,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void countPhases() {
-        if((timeLeftInMilliseconds / timePerPhaseInMilliseconds == phase)){
+        if ((timeLeftInMillis / timePerPhaseInMilliseconds == phase)) {
             phase--;
 
             displayPhase();
