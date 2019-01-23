@@ -1,7 +1,9 @@
 package com.example.timo.simplemeditationtimer;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +35,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     int counter;
     private boolean medFinished;
     private boolean warmUp;
+    private SoundPool soundpool;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,8 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         phaseDisplayed = 0;
         counter = 0;
-
+        //TODO implement soundpool to stop sound on pause and finish
+        soundpool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         medFinished = false;
         intent = getIntent();
         timeLeftInMillis = intent.getLongExtra("lastOfMeditation", 0);
