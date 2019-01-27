@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class MeditationActivity extends AppCompatActivity implements View.OnClickListener {
@@ -33,6 +34,8 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     int counter;
     private boolean medFinished;
     private boolean warmUp;
+    private ArrayList<MediaPlayer> mediaPlayerArrayList;
+    private CountDownTimer threeBellCountdownTimer;
 
 
     @Override
@@ -43,7 +46,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         phaseDisplayed = 0;
         counter = 0;
-
+        mediaPlayerArrayList = new ArrayList<>();
         medFinished = false;
         intent = getIntent();
         timeLeftInMillis = intent.getLongExtra("lastOfMeditation", 0);
@@ -62,6 +65,12 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         timeTextView.setOnClickListener(this);
         checkForWarmUp();
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopBell();
     }
 
     private void checkForWarmUp() {
@@ -86,9 +95,11 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
         int ce = v.getId();
 
         if(ce == R.id.startPauseButton && medFinished){
+
+            stopBell();
             finish();
         }else if(ce == R.id.startPauseButton && timerRunning){
-
+            stopBell();
             pauseTimer();
         } else if (ce == R.id.startPauseButton && !timerRunning && warmUp) {
             startWarmUpTimer();
@@ -152,7 +163,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
 
     private void startThreeGongsTimer() {
 
-        new CountDownTimer(bellDelay * 3 + 500, 100) {
+        threeBellCountdownTimer = new CountDownTimer(bellDelay * 3 + 500, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
                 //kleiner hundert, da ungenau beim abtasten
@@ -173,9 +184,18 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
 
     private void ringBell() {
 
-        MediaPlayer.create(this, R.raw.japanese_singing_bowl).start();
+        mediaPlayerArrayList.add(MediaPlayer.create(this, R.raw.japanese_singing_bowl));
+        mediaPlayerArrayList.get(mediaPlayerArrayList.size() - 1).start();
 
 
+    }
+
+    private void stopBell() {
+        threeBellCountdownTimer.cancel();
+        for (MediaPlayer mp : mediaPlayerArrayList) {
+            mp.stop();
+        }
+        mediaPlayerArrayList.clear();
     }
 
     private void pauseTimer(){
