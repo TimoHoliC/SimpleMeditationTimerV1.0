@@ -63,7 +63,7 @@ public class MainMenuActivity extends AppCompatActivity implements OnClickListen
 
         List<String> warumUpList = new ArrayList<>();
         warumUpList.add("-");
-        warumUpList.add("00:30");
+        warumUpList.add("0:30");
         warumUpList.add("1:00");
         warumUpList.add("2:00");
         warumUpList.add("3:00");
