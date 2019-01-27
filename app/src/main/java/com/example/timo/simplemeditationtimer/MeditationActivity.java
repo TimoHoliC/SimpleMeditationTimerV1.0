@@ -106,7 +106,7 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     private void startWarmUpTimer() {
         warmUp = true;
 
-        countDownTimer = new CountDownTimer(warmUpTimeLeftInMillis, 100) {
+        countDownTimer = new CountDownTimer(warmUpTimeLeftInMillis, 20) {
             @Override
             public void onTick(long millisUntilFinished) {
                 warmUpTimeLeftInMillis = millisUntilFinished;
@@ -127,7 +127,8 @@ public class MeditationActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void startMeditationTimer() {
-        countDownTimer = new CountDownTimer(timeLeftInMillis, 100) {
+        warmUp = false;
+        countDownTimer = new CountDownTimer(timeLeftInMillis, 20) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
